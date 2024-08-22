@@ -55,7 +55,7 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             shell: "sh".to_string(),
-            shell_args: vec!["-c".into(), "{}".into()],
+            shell_args: vec!["-c".into(), "".into()],
             pager: None,
         }
     }
