@@ -7,3 +7,6 @@ description = "Page 'em All, a CLI to page the output of your commands"
 license-file = "LICENSE"
 
 [dependencies]
+dirs = "5.0.1"
+serde = { version = "1.0.208", features = ["derive"] }
+toml = "0.8.19"
