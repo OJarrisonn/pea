@@ -1,5 +1,4 @@
-use std::error::Error;
-
+use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10,15 +9,15 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn load() -> Result<Self, Box<dyn Error>> {
-        let config_path = dirs::config_dir()
-            .ok_or(String::from("Failed to get config directory"))?
-            .join("pea")
-            .join("config.toml");
+    pub fn load() -> Result<Self> {
+        let config_path = match dirs::config_dir() {
+            Some(dir) => dir.join("pea").join("config.toml"),
+            None => bail!("Could not find the configuration directory"),
+        };
 
         if config_path.exists() {
             let config = std::fs::read_to_string(config_path)?;
-            Ok(toml::from_str::<Self>(&config).map_err(Box::new)?)
+            Ok(toml::from_str::<Self>(&config)?)
         } else {
             let config = Self::default();
             let content = toml::to_string(&config)?;

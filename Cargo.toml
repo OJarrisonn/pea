@@ -8,6 +8,8 @@ license-file = "LICENSE"
 rust-version = "1.79.0"
 
 [dependencies]
+anyhow = "1.0.86"
 dirs = "5.0.1"
 serde = { version = "1.0.208", features = ["derive"] }
+thiserror = "1.0.63"
 toml = "0.8.19"
