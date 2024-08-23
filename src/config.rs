@@ -4,9 +4,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
-    pub shell: String,
-    pub shell_args: Vec<String>,
-    pub pager: Option<String>,
+    shell: String,
+    shell_args: Vec<String>,
+    pager: Option<String>,
 }
 
 impl Config {
@@ -28,26 +28,29 @@ impl Config {
         }
     }
 
-    pub fn with_pager(self) -> Self {
+    pub fn pager(&self) -> String {
         match &self.pager {
-            Some(_) => self,
-            None => Self {
-                pager: std::env::var("PEA_PAGER")
-                    .unwrap_or_else(|_| {
-                        std::env::var("PAGER").unwrap_or_else(|_| "less".to_string())
-                    })
-                    .into(),
-                ..self
-            },
+            Some(pager) => pager.clone(),
+            None => std::env::var("PEA_PAGER")
+                .unwrap_or_else(|_| std::env::var("PAGER").unwrap_or_else(|_| "less".to_string())),
         }
     }
 
-    pub fn format_shell_args(&mut self, command: &str) {
-        for arg in &mut self.shell_args {
-            if arg.is_empty() {
-                *arg = command.into();
-            }    
-        }
+    pub fn shell(&self) -> &str {
+        &self.shell
+    }
+
+    pub fn shell_args<'cmd>(&'cmd self, command: &'cmd str) -> Vec<&'cmd str> {
+        self.shell_args
+            .iter()
+            .map(|arg| {
+                if arg.is_empty() {
+                    command
+                } else {
+                    arg.as_str()
+                }
+            })
+            .collect()
     }
 }
 

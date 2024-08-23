@@ -5,12 +5,7 @@ use config::Config;
 mod config;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let mut config = Config::load()?.with_pager();
-
-    if config.pager.is_none() {
-        eprintln!("No pager found. Please set PAGER or PEA_PAGER environment variable.");
-        std::process::exit(1);
-    }
+    let config = Config::load()?;
 
     let command = std::env::args().skip(1).collect::<Vec<_>>().join(" ");
 
@@ -19,14 +14,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         std::process::exit(1);
     }
 
-    
-    let piped_commands = format!("{} | {}", command, config.pager.as_ref().unwrap());
-    config.format_shell_args(&piped_commands);
+    let piped_commands = format!("{} | {}", command, config.pager());
 
-    let status = Command::new(&config.shell)
-        .args(&config.shell_args)
+    let status = Command::new(config.shell())
+        .args(config.shell_args(&piped_commands))
         .stdout(std::process::Stdio::inherit())
-        .status()?;    
+        .status()?;
 
     std::process::exit(status.code().unwrap_or(1));
 }
