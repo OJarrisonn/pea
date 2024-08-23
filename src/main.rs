@@ -1,6 +1,9 @@
-use std::process::Command;
+use std::{
+    io::Write,
+    process::{Command, Stdio},
+};
 
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 use config::Config;
 
 mod config;
@@ -14,13 +17,26 @@ fn main() -> Result<()> {
         bail!("Usage: pea <command> [args...]");
     }
 
-    let piped_commands = format!("{} | {}", command, config.pager());
+    let target = Command::new(config.shell())
+        .args(config.shell_args(&command))
+        .stdout(Stdio::piped())
+        .spawn()?;
 
-    let status = Command::new(config.shell())
-        .args(config.shell_args(&piped_commands))
-        .stdout(std::process::Stdio::inherit())
-        .status()
-        .with_context(|| format!("Failed to run shell `{}`", config.shell()))?;
+    let target_stdout = target.wait_with_output()?;
+    let target_output = String::from_utf8_lossy(&target_stdout.stdout);
+
+    let mut pager = Command::new(config.shell())
+        .args(config.shell_args(&config.pager()))
+        .stdin(Stdio::piped())
+        .stdout(Stdio::inherit())
+        .spawn()?;
+
+    if let Some(mut stdin) = pager.stdin.take() {
+        stdin.write_all(&target_output.as_bytes())?;
+    }
+
+    let status = pager.wait()?;
 
     std::process::exit(status.code().unwrap_or(1));
+    //Ok(())
 }
