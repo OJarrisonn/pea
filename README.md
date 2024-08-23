@@ -1,4 +1,11 @@
-# Page 'em All
+<h1 align="center">Page 'em All</h1>
+
+<div align="center">
+    <img src="https://img.shields.io/badge/RUST-E67C19.svg?style=for-the-badge&logo=Rust&logoColor=white" alt="Rust" />
+    <img alt="GitHub License" src="https://img.shields.io/github/license/OJarrisonn/pea?style=for-the-badge">
+    <img alt="GitHub forks" src="https://img.shields.io/github/forks/OJarrisonn/pea?style=for-the-badge">
+    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/OJarrisonn/pea?style=for-the-badge">
+</div>
 
 `pea` is a CLI tool that helps users to page the output of every command.
 
@@ -74,6 +81,6 @@ pager = "bat -p"
 
 ## Future Plans
 
-- Aliases: support custom aliases in `pea` to always use flags like `--color=always` for given commands
-- Pre-process statements: allow the definition of a preprocess command to run before paging the output
+- **Aliases**: support custom aliases in `pea` to always use flags like `--color=always` for given commands
+- **Pre-process statements**: allow the definition of a preprocess command to run before paging the output
 - Built-in pager
